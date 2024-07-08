@@ -79,11 +79,15 @@ func NewClusterAPI(log logr.Logger, clusterAuth *k8sclient.ClusterAuthInfo, kube
 }
 
 func (c *ClusterAPI) InstallClusterAPI() error {
-	// Create a clusterctl client
 
+	providers := []string{"aws:v2.3.1"} // TODO - there is a bug in CAPI init file. infra provider has to be specified explicitely
+
+	if c.clusterAuth.ClusterName == "cluster-mgmt" { // TODO hardcoded name
+		providers = append(providers, "capk:v0.7.0")
+	}
 	initOptions := capiclient.InitOptions{
 		Kubeconfig:              capiclient.Kubeconfig{Path: c.kubeconfigPath, Context: c.clusterAuth.ContextName},
-		InfrastructureProviders: []string{"aws:v2.3.1"}, // TODO - there is a bug in CAPI init file. infra provider has to be specified explicitely
+		InfrastructureProviders: providers,
 	}
 
 	// Install Cluster API components on this cluster.
@@ -152,7 +156,7 @@ func (c *ClusterAPI) WaitForWorkloadClusterFullyRunning(name string) error {
 // might still be in the process of becoming ready. Therefore, additional checks should be performed
 // after this function returns to ensure that all critical components of the cluster are functional.
 func (c *ClusterAPI) waitForCAPIClusterStateProvisioned(clusterName, namespace string) error {
-	timeout := 15 * time.Minute
+	timeout := 10 * time.Minute
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -172,6 +176,7 @@ func (c *ClusterAPI) waitForCAPIClusterStateProvisioned(clusterName, namespace s
 				return nil
 			}
 
+			c.log.Info("GGG waitForCAPIClusterStateProvisioned, sleep 30s...", "clusterName", clusterName)
 			time.Sleep(30 * time.Second)
 		}
 	}
@@ -189,6 +194,7 @@ func (c *ClusterAPI) WaitForAllClustersProvisioning() error {
 	for _, ns := range namespaces {
 		wg.Add(1)
 		go func(namespace string) {
+			c.log.Info("GGG In Go routine", "cluster", namespace)
 			defer wg.Done()
 			// TODO - need to rework the cluster/namespace relashionship later.
 			//  One namespace should allow more than 1 cluster
@@ -205,6 +211,7 @@ func (c *ClusterAPI) WaitForAllClustersProvisioning() error {
 	// Check for errors
 	for err := range errors {
 		if err != nil {
+			c.log.Info("GGG", "err", err)
 			return err // Return on the first error encountered
 		}
 	}
