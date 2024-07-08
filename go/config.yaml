@@ -31,7 +31,7 @@ clusters:
 
 github:
   user: "olga-mir"
-  branch: "develop"
+  branch: "develop-capk"
   repoName: "k8s-multi-cluster"
 
 # Can be overwritten with K8S_MULTI_KUBECONFIG env variable
