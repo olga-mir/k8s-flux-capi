@@ -1,7 +1,8 @@
 apiVersion: addons.cluster.x-k8s.io/v1alpha1
 kind: HelmChartProxy
 metadata:
-  name: cilium-cluster-mesh # for now mesh is not enabled, but it is WIP
+  name: cilium-cluster-mesh
+  namespace: cluster-01
 spec:
   clusterSelector:
     matchLabels:
