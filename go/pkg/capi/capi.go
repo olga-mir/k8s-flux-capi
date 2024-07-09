@@ -153,7 +153,7 @@ func (c *ClusterAPI) WaitForWorkloadClusterFullyRunning(name string) error {
 // might still be in the process of becoming ready. Therefore, additional checks should be performed
 // after this function returns to ensure that all critical components of the cluster are functional.
 func (c *ClusterAPI) waitForCAPIClusterStateProvisioned(clusterName, namespace string) error {
-	timeout := 15 * time.Minute
+	timeout := 10 * time.Minute
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -173,6 +173,7 @@ func (c *ClusterAPI) waitForCAPIClusterStateProvisioned(clusterName, namespace s
 				return nil
 			}
 
+			c.log.Info("GGG waitForCAPIClusterStateProvisioned, sleep 30s...", "clusterName", clusterName)
 			time.Sleep(30 * time.Second)
 		}
 	}
@@ -183,6 +184,7 @@ func (c *ClusterAPI) WaitForAllClustersProvisioning() error {
 	if err != nil {
 		return fmt.Errorf("failed to list all namespaces: %w", err)
 	}
+	c.log.Info("GGG WaitForAllClustersProvisioning", "cluster context name", c.clusterAuth.ContextName)
 
 	var wg sync.WaitGroup
 	errors := make(chan error, len(namespaces))
@@ -190,6 +192,7 @@ func (c *ClusterAPI) WaitForAllClustersProvisioning() error {
 	for _, ns := range namespaces {
 		wg.Add(1)
 		go func(namespace string) {
+			c.log.Info("GGG WaitForAllClustersProvisioning In Go routine", "namespace", namespace, "cluster context name", c.clusterAuth.ContextName)
 			defer wg.Done()
 			// TODO - need to rework the cluster/namespace relashionship later.
 			//  One namespace should allow more than 1 cluster
@@ -206,6 +209,7 @@ func (c *ClusterAPI) WaitForAllClustersProvisioning() error {
 	// Check for errors
 	for err := range errors {
 		if err != nil {
+			c.log.Info("GGG WaitForAllClustersProvisioning", "err", err)
 			return err // Return on the first error encountered
 		}
 	}
