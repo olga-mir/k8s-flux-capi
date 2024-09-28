@@ -1,0 +1,12 @@
+apiVersion: clusterctl.cluster.x-k8s.io/v1alpha3
+kind: ClusterctlConfig
+providers:
+- name: "kubemark"
+  url: "https://github.com/kubernetes-sigs/cluster-api-provider-kubemark/releases/v0.7.0/infrastructure-components.yaml"
+  type: "InfrastructureProvider"
+
+
+# "https://github.com/kubernetes-sigs/cluster-api/releases/v1.6.0/bootstrap-components.yaml"
+
+# copy clean link from releases
+# https://github.com/kubernetes-sigs/cluster-api-provider-kubemark/releases/download/v0.7.0/infrastructure-components.yaml

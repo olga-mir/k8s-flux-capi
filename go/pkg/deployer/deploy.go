@@ -127,6 +127,7 @@ func Deploy(log logr.Logger, cfg *config.Config) error {
 		return fmt.Errorf("error creating FluxCD secret: %v", err)
 	}
 
+	log.Info("Flux Secret provisioned, start checking the clusters")
 	if err := mgmtCAPI.WaitForAllClustersProvisioning(); err != nil {
 		fmt.Printf("Error waiting for clusters to be provisioned: %s\n", err)
 	}
