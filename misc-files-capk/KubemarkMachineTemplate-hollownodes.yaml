@@ -1,0 +1,14 @@
+apiVersion: infrastructure.cluster.x-k8s.io/v1alpha4
+kind: KubemarkMachineTemplate
+metadata:
+  labels:
+    cluster.x-k8s.io/cluster-name: wow
+  name: kubemark-big-machine
+  namespace: default
+spec:
+  template:
+    spec:
+      kubemarkOptions:
+        extendedResources:
+          cpu: "32"
+          memory: "128G"
